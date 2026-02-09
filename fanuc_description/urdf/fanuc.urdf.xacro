@@ -1,0 +1,318 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="fanuc">
+
+  <xacro:property name="mesh_path" value="$(find fanuc_description)/meshes"/>
+
+  <!-- ================= PROPERTIES ================= -->
+  <xacro:property name="base_mass" value="20.0"/>
+  <xacro:property name="link_mass" value="5.0"/>
+  <xacro:property name="tool_mass" value="1.0"/>
+
+  <xacro:property name="base_inertia" value="1.0"/>
+  <xacro:property name="link_inertia" value="0.05"/>
+  <xacro:property name="tool_inertia" value="0.01"/>
+
+  <xacro:property name="damping" value="1500.0"/>
+  <xacro:property name="friction" value="1000.0"/>
+
+  <xacro:property name="base_height" value="0.450"/>
+  <xacro:property name="link1_x_offset" value="0.150"/>
+  <xacro:property name="link2_z_offset" value="0.600"/>
+  <xacro:property name="link3_z_offset" value="0.200"/>
+  <xacro:property name="link4_x_offset" value="0.640"/>
+  <xacro:property name="link5_x_offset" value="0.100"/>
+
+  <!-- ================= MACROS ================= -->
+
+  <xacro:macro name="default_inertial" params="mass ixx:=${link_inertia} iyy:=${link_inertia} izz:=${link_inertia}">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia ixx="${ixx}" ixy="0" ixz="0" iyy="${iyy}" iyz="0" izz="${izz}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- FIXED: color must be inside visual -->
+  <xacro:macro name="fanuc_link" params="name mass:=${link_mass} r:=1 g:=0.8 b:=0.1">
+    <link name="${name}">
+      <xacro:default_inertial mass="${mass}"/>
+
+      <visual>
+        <geometry>
+          <mesh filename="file://${mesh_path}/visual/${name}.stl"/>
+        </geometry>
+        <material name="${name}_mat">
+          <color rgba="${r} ${g} ${b} 1"/>
+        </material>
+      </visual>
+
+      <collision>
+        <geometry>
+          <mesh filename="file://${mesh_path}/collision/${name}.stl"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+
+  <!-- ================= BASE ================= -->
+
+  <link name="base_link">
+    <xacro:default_inertial mass="${base_mass}" ixx="${base_inertia}" iyy="${base_inertia}" izz="${base_inertia}"/>
+
+    <visual>
+      <geometry>
+        <mesh filename="file://${mesh_path}/visual/base_link.stl"/>
+      </geometry>
+      <material name="base_color">
+        <color rgba="0.35 0.35 0.35 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <mesh filename="file://${mesh_path}/collision/base_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ================= LINKS ================= -->
+  <xacro:fanuc_link name="link_1"/>
+  <xacro:fanuc_link name="link_2"/>
+  <xacro:fanuc_link name="link_3"/>
+  <xacro:fanuc_link name="link_4"/>
+  <xacro:fanuc_link name="link_5"/>
+  <xacro:fanuc_link name="link_6" r="0.2" g="0.2" b="0.2"/>
+
+  <link name="tool0">
+    <xacro:default_inertial mass="${tool_mass}" ixx="${tool_inertia}" iyy="${tool_inertia}" izz="${tool_inertia}"/>
+  </link>
+
+  <!-- ================= JOINTS ================= -->
+  <joint name="joint_1" type="revolute">
+    <origin xyz="0 0 ${base_height}"/>
+    <parent link="base_link"/>
+    <child link="link_1"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="10000" velocity="3.67"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+
+  <joint name="joint_2" type="revolute">
+    <origin xyz="${link1_x_offset} 0 0"/>
+    <parent link="link_1"/>
+    <child link="link_2"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="2.79" effort="10000" velocity="3.67"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+
+  <joint name="joint_3" type="revolute">
+    <origin xyz="0 0 ${link2_z_offset}"/>
+    <parent link="link_2"/>
+    <child link="link_3"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-3.14" upper="4.61" effort="10000" velocity="3.67"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+
+  <joint name="joint_4" type="revolute">
+    <origin xyz="0 0 ${link3_z_offset}"/>
+    <parent link="link_3"/>
+    <child link="link_4"/>
+    <axis xyz="-1 0 0"/>
+    <limit lower="-3.31" upper="3.31" effort="10000" velocity="6.98"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+
+  <joint name="joint_5" type="revolute">
+    <origin xyz="${link4_x_offset} 0 0"/>
+    <parent link="link_4"/>
+    <child link="link_5"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-3.31" upper="3.31" effort="10000" velocity="6.98"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+
+  <joint name="joint_6" type="revolute">
+    <origin xyz="${link5_x_offset} 0 0"/>
+    <parent link="link_5"/>
+    <child link="link_6"/>
+    <axis xyz="-1 0 0"/>
+    <limit lower="-6.28" upper="6.28" effort="10000" velocity="10.47"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+
+  <joint name="joint_6-tool0" type="fixed">
+    <parent link="link_6"/>
+    <child link="tool0"/>
+  </joint>
+
+  <!-- ================= ROS2 CONTROL (HARMONIC) ================= -->
+  <ros2_control name="fanuc_system" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+
+    <joint name="joint_1">
+      <command_interface name="position"/>  <!-- CHANGED from effort -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="joint_2">
+      <command_interface name="position"/>  <!-- CHANGED from effort -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="joint_3">
+      <command_interface name="position"/>  <!-- CHANGED from effort -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="joint_4">
+      <command_interface name="position"/>  <!-- CHANGED from effort -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="joint_5">
+      <command_interface name="position"/>  <!-- CHANGED from effort -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="joint_6">
+      <command_interface name="position"/>  <!-- CHANGED from effort -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+
+  <!-- Harmonic control plugin -->
+
+  <gazebo>
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find fanuc_moveit_config)/config/ros2_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+    <!-- ================= TRANSMISSIONS (REQUIRED FOR GZ_SIM + ROS2_CONTROL) ================= -->
+
+  <transmission name="joint_1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="joint_1_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="joint_2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="joint_2_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="joint_3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_3">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="joint_3_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="joint_4_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_4">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="joint_4_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="joint_5_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_5">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="joint_5_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="joint_6_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint_6">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="joint_6_motor">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+
+
+
+  <!-- world anchor -->
+  <!-- <link name="world"/>
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint> -->
+
+  <!-- ================= GAZEBO PROPERTIES ================= -->
+  
+  <gazebo reference="base_link">
+    <gravity>true</gravity>
+  </gazebo>
+
+  <gazebo reference="link_1">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <gazebo reference="link_2">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <gazebo reference="link_3">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <gazebo reference="link_4">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <gazebo reference="link_5">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <gazebo reference="link_6">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <gazebo reference="tool0">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <!-- camera -->
+  <xacro:include filename="$(find fanuc_description)/urdf/sensors/intel_rgbd_cam_d435.urdf.xacro"/>
+
+</robot>

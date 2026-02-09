@@ -1,0 +1,28 @@
+/**:
+  ros__parameters:
+    # Occupancy Map Monitor Configuration
+    octomap_frame: world
+    octomap_resolution: 0.02
+    max_range: 1.5
+    
+    # Sensor Configuration
+    sensors:
+      - pointcloud
+    
+    pointcloud:
+      sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
+      point_cloud_topic: /camera/depth/points
+      max_range: 1.5
+      point_subsample: 1
+      padding_offset: 0.02
+      padding_scale: 1.0
+      filtered_cloud_topic: filtered_cloud
+      max_update_rate: 5.0
+    
+    # Planning Scene Monitor
+    publish_planning_scene: true
+    publish_geometry_updates: true
+    publish_state_updates: true
+    publish_transforms_updates: true
+    
+   

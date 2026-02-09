@@ -1,0 +1,16 @@
+sensors:
+  - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
+    point_cloud_topic: /camera/depth/points
+    max_range: 1.5
+    point_subsample: 1
+    padding_offset: 0.02
+    padding_scale: 1.0
+    padding: 0.05
+    max_update_rate: 5.0
+    point_cloud_min_z: -1.0
+    point_cloud_max_z: 3.0
+    filtered_cloud_topic: filtered_cloud
+    ns: camera
+    # These are critical:
+    filter_robot_from_depth: true
+    shadow_threshold: 0.4

@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<robot name="fanuc">
+
+  <!-- ================= BASE ================= -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="20.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+               iyy="1.0" iyz="0.0"
+               izz="1.0"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://fanuc_description/meshes/visual/base_link.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://fanuc_description/meshes/collision/base_link.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- LINKS -->
+  <link name="link_1">
+    <inertial><origin xyz="0 0 0"/><mass value="5"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/></inertial>
+    <visual><geometry><mesh filename="package://fanuc_description/meshes/visual/link_1.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="package://fanuc_description/meshes/collision/link_1.stl"/></geometry></collision>
+  </link>
+
+  <link name="link_2">
+    <inertial><origin xyz="0 0 0"/><mass value="5"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/></inertial>
+    <visual><geometry><mesh filename="package://fanuc_description/meshes/visual/link_2.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="package://fanuc_description/meshes/collision/link_2.stl"/></geometry></collision>
+  </link>
+
+  <link name="link_3">
+    <inertial><origin xyz="0 0 0"/><mass value="5"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/></inertial>
+    <visual><geometry><mesh filename="package://fanuc_description/meshes/visual/link_3.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="package://fanuc_description/meshes/collision/link_3.stl"/></geometry></collision>
+  </link>
+
+  <link name="link_4">
+    <inertial><origin xyz="0 0 0"/><mass value="5"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/></inertial>
+    <visual><geometry><mesh filename="package://fanuc_description/meshes/visual/link_4.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="package://fanuc_description/meshes/collision/link_4.stl"/></geometry></collision>
+  </link>
+
+  <link name="link_5">
+    <inertial><origin xyz="0 0 0"/><mass value="5"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/></inertial>
+    <visual><geometry><mesh filename="package://fanuc_description/meshes/visual/link_5.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="package://fanuc_description/meshes/collision/link_5.stl"/></geometry></collision>
+  </link>
+
+  <link name="link_6">
+    <inertial><origin xyz="0 0 0"/><mass value="5"/><inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/></inertial>
+    <visual><geometry><mesh filename="package://fanuc_description/meshes/visual/link_6.stl"/></geometry></visual>
+    <collision><geometry><mesh filename="package://fanuc_description/meshes/collision/link_6.stl"/></geometry></collision>
+  </link>
+
+  <link name="tool0">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- JOINTS -->
+  <joint name="joint_1" type="revolute">
+    <origin xyz="0 0 0.450"/>
+    <parent link="base_link"/>
+    <child link="link_1"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="10000" velocity="3.67"/>
+    <dynamics damping="500.0" friction="200.0"/>
+  </joint>
+
+  <joint name="joint_2" type="revolute">
+    <origin xyz="0.150 0 0"/>
+    <parent link="link_1"/>
+    <child link="link_2"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="2.79" effort="10000" velocity="3.67"/>
+    <dynamics damping="500.0" friction="200.0"/>
+  </joint>
+
+  <joint name="joint_3" type="revolute">
+    <origin xyz="0 0 0.600"/>
+    <parent link="link_2"/>
+    <child link="link_3"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-3.14" upper="4.61" effort="10000" velocity="3.67"/>
+    <dynamics damping="500.0" friction="200.0"/>
+  </joint>
+
+  <joint name="joint_4" type="revolute">
+    <origin xyz="0 0 0.200"/>
+    <parent link="link_3"/>
+    <child link="link_4"/>
+    <axis xyz="-1 0 0"/>
+    <limit lower="-3.31" upper="3.31" effort="10000" velocity="6.98"/>
+    <dynamics damping="500.0" friction="200.0"/>
+  </joint>
+
+  <joint name="joint_5" type="revolute">
+    <origin xyz="0.640 0 0"/>
+    <parent link="link_4"/>
+    <child link="link_5"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-3.31" upper="3.31" effort="10000" velocity="6.98"/>
+    <dynamics damping="500.0" friction="200.0"/>
+  </joint>
+
+  <joint name="joint_6" type="revolute">
+    <origin xyz="0.100 0 0"/>
+    <parent link="link_5"/>
+    <child link="link_6"/>
+    <axis xyz="-1 0 0"/>
+    <limit lower="-6.28" upper="6.28" effort="10000" velocity="10.47"/>
+    <dynamics damping="500.0" friction="200.0"/>
+  </joint>
+
+  <joint name="joint_6-tool0" type="fixed">
+    <origin rpy="3.1415926535 -1.570796327 0" xyz="0 0 0"/>
+    <parent link="link_6"/>
+    <child link="tool0"/>
+  </joint>
+
+  <!-- ================= GAZEBO COLORS ================= -->
+
+  <gazebo reference="base_link"><material>Gazebo/Grey</material></gazebo>
+  <gazebo reference="link_1"><material>Gazebo/Yellow</material></gazebo>
+  <gazebo reference="link_2"><material>Gazebo/Yellow</material></gazebo>
+  <gazebo reference="link_3"><material>Gazebo/Yellow</material></gazebo>
+  <gazebo reference="link_4"><material>Gazebo/Yellow</material></gazebo>
+  <gazebo reference="link_5"><material>Gazebo/Yellow</material></gazebo>
+  <gazebo reference="link_6"><material>Gazebo/DarkGrey</material></gazebo>
+
+  <!-- Anchor robot to Gazebo world -->
+  <link name="world"/>
+
+  <joint name="world_to_base" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+
+</robot>
